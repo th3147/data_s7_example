@@ -5,7 +5,7 @@ date: "2025-10-19"
 output: html_document
 ---
 
-* if you want to a map being interactive, you should html, rather github
+* if you want to a map being interactive, you should use html, rather github
 
 Dataset and library
 
