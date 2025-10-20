@@ -1,0 +1,98 @@
+---
+title: "Reading file"
+author: "Te-Hsuan Huang"
+date: "2025-10-19"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+library(rvest)
+library(httr)
+```
+
+## Scrarping the table
+
+Read in html
+```{r}
+url = "http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm"
+
+drug_use_html = read_html(url)
+
+drug_use_html
+```
+
+Extract tables
+```{r}
+drug_use_html |>
+  html_table()
+```
+
+Only focus on first table
+```{r}
+table_marj = 
+  drug_use_html |> 
+  html_table() |> 
+  first() |> 
+  slice(-1)|> 
+  as_tibble()
+```
+cut the first row: slice(-1)
+
+Star wars movie info
+```{r}
+swm_html = 
+  read_html("https://www.imdb.com/list/ls070150896/")
+```
+
+Grab elements I want
+```{r}
+title_vec = 
+  swm_html |>
+  html_elements(".ipc-title-link-wrapper .ipc-title__text--reduced") |>
+  html_text()
+
+metascore_vec = 
+  swm_html |>
+  html_elements(".metacritic-score-box") |>
+  html_text()
+
+runtime_vec = 
+  swm_html |>
+  html_elements(".dli-title-metadata-item:nth-child(2)")|>
+  html_text()
+
+swm_df = 
+  tibble(
+    title = title_vec,
+    score = metascore_vec,
+    runtime = runtime_vec)
+```
+
+Grab another data from api
+```{r}
+nyc_water = 
+  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.csv") |> 
+  content("parsed")
+```
+
+Grab data from BRFSS
+```{r}
+brfss_smart2010 = 
+  GET("https://chronicdata.cdc.gov/resource/acme-vg9e.csv",
+      query=list("$limit"=5000)) |> 
+  content("parsed")
+```
+Get it 5000 rows
+
+Grab data from Pokemon
+```{r}
+poke = 
+  GET("http://pokeapi.co/api/v2/pokemon/1") |>
+  content()
+
+poke[["name"]]
+poke[["height"]]
+poke[["abilities"]]
+```
+
